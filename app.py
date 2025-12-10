@@ -77,7 +77,7 @@ cm = confusion_matrix(y, y_pred)
 # Dashboard
 # ============================
 st.title("Dashboard Analítico de Churn – Fintech KNN")
-st.write("Visualización simple y clara del churn y su comportamiento por segmentos.")
+
 
 # ---- Métricas ----
 st.subheader("Métricas Principales")
