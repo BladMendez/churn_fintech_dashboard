@@ -12,7 +12,7 @@ features = joblib.load("features_knn_churn.pkl")
 umbral = joblib.load("umbral_optimo_knn.pkl")
 
 # Cargar dataset procesado FINAL (el que sí coincide con el modelo)
-df = pd.read_csv("dataset_final_procesado.csv")
+df = pd.read_csv("dataset_procesado_final.csv")
 
 # ============================
 # Dashboard
