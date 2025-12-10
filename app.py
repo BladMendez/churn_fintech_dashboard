@@ -97,7 +97,29 @@ def calcular_metricas(modelo, umbral, scaler, df, features):
 # CARGA DEL MODELO Y DATA
 # =====================================================================
 modelo, scaler, umbral, features = cargar_modelo_y_scaler()
-df, importancias = cargar_datos()
+df_original = pd.read_csv("dataset_ecommerce_limpio.csv")
+
+# recrear exactamente las mismas features que en el modelo
+df = df_original.copy()
+df['Es_Nuevo'] = (df['Antiguedad'] < 5).astype(int)
+df['Tiene_Queja'] = df['Queja'].astype(int)
+df['Alto_Riesgo'] = ((df['Queja'] == 1) & (df['Antiguedad'] < 5)).astype(int)
+df['Satisfaccion_Baja'] = (df['Nivel_Satisfaccion'] <= 2).astype(int)
+
+# asegurar orden EXACTO
+features = joblib.load("features_knn_churn.pkl")
+X = df[features]
+y = df["Target"]
+
+# calcular importancia REAL como en el notebook
+X_scaled = scaler.transform(X)
+result = permutation_importance(modelo, X_scaled, y, n_repeats=10, random_state=42)
+
+importancias = pd.DataFrame({
+    "feature": features,
+    "importance": result.importances_mean
+})
+
 
 # =====================================================================
 # CREAR SEGMENTACIONES
