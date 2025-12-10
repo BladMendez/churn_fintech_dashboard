@@ -31,9 +31,10 @@ st.write("**Umbral óptimo:**", umbral)
 # ---- 2. Importancia de variables (DESACTIVADA) ----
 st.subheader(" Importancia de Variables (Permutation Importance)")
 
-st.info(" Este gráfico fue desactivado temporalmente porque el dataset usado en Streamlit no coincide con las columnas usadas al entrenar el modelo.  
-Cuando subamos el dataset procesado final, esta sección volverá a funcionar.")
-
+st.info(""" Este gráfico fue desactivado temporalmente porque el dataset usado en Streamlit 
+no coincide con las columnas usadas al entrenar el modelo.
+Cuando subamos el dataset procesado final, esta sección volverá a funcionar.
+""")
 # ---- 3. Segmentación simple ----
 st.subheader(" Distribución por Segmentos")
 
