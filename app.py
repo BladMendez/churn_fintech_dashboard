@@ -34,6 +34,7 @@ umbral = joblib.load("umbral_optimo_knn.pkl")
 features = joblib.load("features_knn_churn.pkl")
 
 df = pd.read_csv("dataset_procesado_final.csv")
+importancias = pd.read_csv("importancia_variables_knn.csv")
 
 # ============================
 # Crear columnas segmentadas
@@ -141,3 +142,18 @@ plt.tight_layout(pad=0.5)
 st.pyplot(fig)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
+st.subheader("Importancia de Variables (Permutation Importance)")
+
+fig, ax = plt.subplots(figsize=(5, 3))  # Compacta para que no ocupe media pantalla
+
+importancias_sorted = importancias.sort_values("importance", ascending=True)
+
+ax.barh(importancias_sorted["feature"], importancias_sorted["importance"], color="#77c2ff")
+ax.set_xlabel("Importancia", fontsize=8)
+ax.set_ylabel("Variable", fontsize=8)
+ax.tick_params(axis="both", labelsize=7)
+
+plt.tight_layout(pad=0.5)
+st.pyplot(fig)
+
