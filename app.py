@@ -11,25 +11,7 @@ scaler = joblib.load("scaler_knn_churn.pkl")
 features = joblib.load("features_knn_churn.pkl")
 umbral = joblib.load("umbral_optimo_knn.pkl")
 
-df = pd.read_csv("dataset_ecommerce_limpio.csv")
-
-st.subheader("Columnas detectadas en el dataset")
-st.write(list(df.columns))
-
-st.subheader("Columnas que el modelo espera (features.pkl)")
-st.write(features)
-
-st.subheader("Diagnóstico de diferencias")
-
-cols_dataset = set(df.columns)
-cols_model = set(features)
-
-faltantes = cols_model - cols_dataset
-sobrantes = cols_dataset - cols_model
-
-st.write("🔴 Columnas que el modelo necesita y NO están en el dataset:", faltantes)
-st.write("🟡 Columnas que están en el dataset pero NO las usa el modelo:", sobrantes)
-
+df = pd.read_csv("dataset_procesado_final.csv")
 
 # ============================
 # Dashboard
