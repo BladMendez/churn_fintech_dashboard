@@ -77,36 +77,17 @@ columna = {
 # ============================
 st.subheader(f"Tasa de churn por {segmento}")
 
-fig, ax = plt.subplots(figsize=(5.5, 3.2))  # ← más pequeña
-df.groupby(columna)["Target"].mean().plot(
-    kind="bar",
-    color="#77c2ff",
-    ax=ax,
-)
+# Contenedor con ancho limitado
+st.markdown('<div class="chart-container">', unsafe_allow_html=True)
 
-ax.set_ylabel("Tasa de churn", fontsize=9)
-ax.set_xlabel(columna, fontsize=9)
-ax.tick_params(axis="both", labelsize=8)
-plt.tight_layout(pad=1)  # ← compacta espacios
+fig, ax = plt.subplots(figsize=(5, 3))  # Gráfica más pequeña
+df.groupby(columna)["Target"].mean().plot(kind="bar", color="#77c2ff", ax=ax)
 
-st.pyplot(fig)st.subheader(f"Tasa de churn por {segmento}")
+ax.set_ylabel("Tasa de churn", fontsize=8)
+ax.set_xlabel(columna, fontsize=8)
+ax.tick_params(axis="both", labelsize=7)
 
-with st.container():
-    st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+plt.tight_layout(pad=0.5)
+st.pyplot(fig)
 
-    fig, ax = plt.subplots(figsize=(5, 3))  # tamaño pequeño real
-    df.groupby(columna)["Target"].mean().plot(
-        kind="bar",
-        color="#77c2ff",
-        ax=ax,
-    )
-    ax.set_ylabel("Tasa de churn", fontsize=8)
-    ax.set_xlabel(columna, fontsize=8)
-    ax.tick_params(axis="both", labelsize=7)
-
-    plt.tight_layout(pad=0.5)
-    st.pyplot(fig)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
+st.markdown('</div>', unsafe_allow_html=True)
