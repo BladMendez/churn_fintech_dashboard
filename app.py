@@ -28,11 +28,11 @@ df["Cashback_seg"] = pd.qcut(df["Monto_Cashback"], 4,
 # ============================
 # Dashboard
 # ============================
-st.title("📊 Dashboard Analítico de Churn – Fintech KNN")
+st.title("Dashboard Analítico de Churn – Fintech KNN")
 st.write("Visualización simple y clara del churn y su comportamiento por segmentos.")
 
 # ---- Métricas ----
-st.subheader("🔎 Métricas Principales")
+st.subheader("Métricas Principales")
 tasa_churn = df["Target"].mean()
 st.metric("Tasa global de churn", f"{tasa_churn:.2%}")
 st.write("**Modelo cargado:**", modelo)
