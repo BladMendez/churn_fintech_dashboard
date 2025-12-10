@@ -3,6 +3,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import joblib
 
+# ====== Limitar el ancho máximo del contenido ======
+st.markdown("""
+    <style>
+    .block-container {
+        max-width: 900px;     /* reduce el ancho total */
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    .chart-container {
+        max-width: 650px;     /* ancho fijo para la gráfica */
+        margin-left: auto;
+        margin-right: auto;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+
 st.set_page_config(page_title="Churn Dashboard", layout="wide")
 
 # ============================
@@ -72,5 +89,24 @@ ax.set_xlabel(columna, fontsize=9)
 ax.tick_params(axis="both", labelsize=8)
 plt.tight_layout(pad=1)  # ← compacta espacios
 
-st.pyplot(fig)
+st.pyplot(fig)st.subheader(f"Tasa de churn por {segmento}")
+
+with st.container():
+    st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+
+    fig, ax = plt.subplots(figsize=(5, 3))  # tamaño pequeño real
+    df.groupby(columna)["Target"].mean().plot(
+        kind="bar",
+        color="#77c2ff",
+        ax=ax,
+    )
+    ax.set_ylabel("Tasa de churn", fontsize=8)
+    ax.set_xlabel(columna, fontsize=8)
+    ax.tick_params(axis="both", labelsize=7)
+
+    plt.tight_layout(pad=0.5)
+    st.pyplot(fig)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
 
