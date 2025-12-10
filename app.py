@@ -56,12 +56,21 @@ columna = {
 }[segmento]
 
 # ============================
-# Gráfica
+# Gráfica compacta
 # ============================
 st.subheader(f"Tasa de churn por {segmento}")
 
-fig, ax = plt.subplots(figsize=(7,4))
-df.groupby(columna)["Target"].mean().plot(kind="bar", color="skyblue", ax=ax)
-ax.set_ylabel("Tasa de churn")
-ax.set_xlabel(columna)
+fig, ax = plt.subplots(figsize=(5.5, 3.2))  # ← más pequeña
+df.groupby(columna)["Target"].mean().plot(
+    kind="bar",
+    color="#77c2ff",
+    ax=ax,
+)
+
+ax.set_ylabel("Tasa de churn", fontsize=9)
+ax.set_xlabel(columna, fontsize=9)
+ax.tick_params(axis="both", labelsize=8)
+plt.tight_layout(pad=1)  # ← compacta espacios
+
 st.pyplot(fig)
+
