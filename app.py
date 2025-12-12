@@ -29,25 +29,31 @@ html, body, [class*="css"] {
 }
 
 /* ====================== */
-/* LOGO CENTRADO */
+/* LOGO GRANDE Y CENTRADO */
 /* ====================== */
 .logo-container {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
-    margin-bottom: -20px;
+    margin-top: 5px;
+    margin-bottom: -10px;
+}
+
+.logo-img {
+    width: 230px;  /* ← AJUSTA AQUÍ EL TAMAÑO DEL LOGO */
+    filter: drop-shadow(0px 0px 6px rgba(0,0,0,0.35));
 }
 
 /* ====================== */
 /* TÍTULO ANIMADO */
 /* ====================== */
 .fade-title {
-    font-size: 3rem;
+    font-size: 3.2rem;
     font-weight: 900;
     text-align: center;
     color: white !important;
     opacity: 0;
     animation: fadeInTitle 1.6s ease-out forwards;
+    margin-top: 5px;
 }
 
 @keyframes fadeInTitle {
@@ -59,11 +65,12 @@ html, body, [class*="css"] {
 /* TARJETAS DE MÉTRICAS */
 /* ====================== */
 .metric-card {
-    background: rgba(255,255,255,0.06);
-    padding: 16px 22px;
+    background: rgba(255,255,255,0.07);
+    padding: 18px 24px;
     border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.22);
     transition: 0.18s ease-in-out;
+    backdrop-filter: blur(4px);
 }
 
 .metric-card:hover {
@@ -80,42 +87,48 @@ html, body, [class*="css"] {
 
 /* Valor grande */
 .metric-value {
-    font-size: 1.8rem;
+    font-size: 1.9rem;
     font-weight: 700;
     color: white;
 }
 
 /* ====================== */
-/* MATRIZ DE CONFUSIÓN   */
+/* TABLA: MATRIZ DE CONFUSIÓN */
 /* ====================== */
 table {
-    background-color: rgba(255,255,255,0.12) !important;
-    border-radius: 10px !important;
-    overflow: hidden;
+    background-color: rgba(255,255,255,0.18) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
 }
 
 thead tr th {
-    color: white !important;
-    background-color: rgba(255,255,255,0.25) !important;
+    color: #ffffff !important;
+    background-color: rgba(255,255,255,0.28) !important;
+    font-weight: 700 !important;
 }
 
 tbody tr td {
-    color: white !important;
-    background-color: rgba(0,0,0,0.25) !important;
+    color: #ffffff !important;
+    background-color: rgba(0,0,0,0.30) !important;
+    padding: 8px !important;
 }
 
 /* ====================== */
 /* DROPDOWN DESPLEGABLE  */
 /* ====================== */
 .stSelectbox > div > div {
-    background-color: rgba(255,255,255,0.15) !important;
+    background-color: rgba(255,255,255,0.12) !important;
     color: white !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+}
+
+.stSelectbox > div > div:hover {
+    background-color: rgba(255,255,255,0.20) !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
-
 
 
 # ============================
@@ -227,7 +240,7 @@ st.table(pd.DataFrame(cm,
 ))
 
 # ============================
-# 👉 RESTAURACIÓN DE SEGMENTACIÓN (GRÁFICA DESPLEGABLE)
+#  (GRÁFICA DESPLEGABLE)
 # ============================
 st.subheader("Segmentación de Churn")
 
