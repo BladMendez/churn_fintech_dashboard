@@ -24,10 +24,8 @@ st.markdown("""
     --cz-blue-dark: #0b1f3b;
     --cz-blue-mid:  #1757a6;
     --cz-green:     #39b54a;
-    --cz-light:     #e5e7eb;
 }
 
-/* Título animado */
 .fade-title {
     font-size: 2.8rem;
     font-weight: 900;
@@ -39,12 +37,12 @@ st.markdown("""
     opacity: 0;
     animation: fadeInTitle 2s ease-out forwards;
 }
+
 @keyframes fadeInTitle {
     from { opacity: 0; transform: translateY(-10px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Tarjetas de métricas */
 .metric-card {
     background: #020617;
     border-radius: 14px;
@@ -54,11 +52,13 @@ st.markdown("""
     transition: all 0.18s ease-in-out;
     box-shadow: 0 4px 12px rgba(15,23,42,0.5);
 }
+
 .metric-card:hover {
     background: linear-gradient(135deg, var(--cz-blue-dark), var(--cz-green));
     transform: translateY(-3px) scale(1.01);
     box-shadow: 0 14px 30px rgba(15,23,42,0.9);
 }
+
 .metric-label { font-size: 0.8rem; color: #9ca3af; text-transform: uppercase; }
 .metric-value { font-size: 1.6rem; font-weight: 700; color: #fff; }
 </style>
@@ -78,8 +78,7 @@ def cargar_modelo():
 
 @st.cache_data
 def cargar_dataset():
-    df = pd.read_csv("dataset_ecommerce_limpio.csv")
-    return df
+    return pd.read_csv("dataset_ecommerce_limpio.csv")
 
 @st.cache_data
 def cargar_test_set():
@@ -87,11 +86,15 @@ def cargar_test_set():
         return joblib.load("datos_test_knn.pkl")
     return None, None
 
+# PERMUTATION IMPORTANCE cacheado correctamente SIN parámetros
 @st.cache_resource
-def compute_permutation(modelo, X_scaled_full, y_full):
+def compute_permutation():
     return permutation_importance(
-        modelo, X_scaled_full, y_full,
-        n_repeats=20, random_state=42
+        modelo,
+        X_scaled_full,
+        y_full,
+        n_repeats=20,
+        random_state=42
     )
 
 # ============================
@@ -101,7 +104,7 @@ modelo, scaler, umbral, features = cargar_modelo()
 df = cargar_dataset()
 X_test_scaled, y_test = cargar_test_set()
 
-# RECREAR VARIABLES EXACTAS
+# VARIABLES EXACTAS DEL NOTEBOOK
 df["Es_Nuevo"] = (df["Antiguedad"] < 5).astype(int)
 df["Tiene_Queja"] = df["Queja"].astype(int)
 df["Alto_Riesgo"] = ((df["Queja"] == 1) & (df["Antiguedad"] < 5)).astype(int)
@@ -111,21 +114,19 @@ X_full = df[features]
 y_full = df["Target"]
 X_scaled_full = scaler.transform(X_full)
 
-# IMPORTANCIA (cacheada)
-result = compute_permutation(modelo, X_scaled_full, y_full)
+# IMPORTANCIA CACHEADA
+result = compute_permutation()
 importancias = pd.DataFrame({
     "feature": features,
     "importance": result.importances_mean
 }).sort_values("importance", ascending=True)
 
 # ============================
-# LOGO (evita error si no existe)
+# LOGO OPCIONAL
 # ============================
 logo_path = "logo_churnzero_2026.png"
 if os.path.exists(logo_path):
     st.image(logo_path, width=160)
-else:
-    st.info(" Logo no encontrado. Asegúrate de subirlo al entorno.")
 
 # ============================
 # TÍTULO ANIMADO
@@ -182,4 +183,5 @@ st.table(pd.DataFrame(cm,
 st.subheader("Importancia de Variables")
 fig, ax = plt.subplots(figsize=(5, 3))
 ax.barh(importancias["feature"], importancias["importance"], color="#77c2ff")
+plt.tight_layout()
 st.pyplot(fig)
