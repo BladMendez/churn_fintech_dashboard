@@ -10,71 +10,95 @@ from sklearn.inspection import permutation_importance
 import os
 
 # ============================
-# CONFIGURACIÓN VISUAL
+# CONFIG GENERAL
 # ============================
-st.set_page_config(page_title="Churn Dashboard – KNN Fintech", layout="wide")
+st.set_page_config(page_title="ChurnZero 2026 – Dashboard KNN", layout="wide")
 
-# ---------------- CSS CUSTOM ----------------
+# ============================
+# 🎨 CSS — NUEVO DISEÑO
+# ============================
 st.markdown("""
 <style>
-.block-container { max-width: 1000px; padding-top: 1rem; padding-bottom: 1rem; }
-.chart-container { max-width: 650px; margin-left: auto; margin-right: auto; }
 
-:root {
-    --cz-blue-dark: #0b1f3b;
-    --cz-blue-mid:  #1757a6;
-    --cz-green:     #39b54a;
+html, body, [class*="css"]  {
+    background: linear-gradient(180deg, #0b1f3b, #1757a6, #39b54a);
+    color: white !important;
 }
 
+.block-container {
+    max-width: 1150px;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #ffffff !important;
+}
+
+/* Título fade */
 .fade-title {
-    font-size: 2.8rem;
+    font-size: 3rem;
     font-weight: 900;
     text-align: center;
-    margin-bottom: 0.3rem;
-    background: linear-gradient(90deg, var(--cz-blue-mid), var(--cz-green));
+    margin-top: 0.3rem;
+    background: linear-gradient(90deg, #78c3ff, #39b54a);
     -webkit-background-clip: text;
     color: transparent;
     opacity: 0;
-    animation: fadeInTitle 2s ease-out forwards;
+    animation: fadeIn 2s ease-out forwards;
 }
-
-@keyframes fadeInTitle {
-    from { opacity: 0; transform: translateY(-10px); }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Tarjetas */
 .metric-card {
-    background: #020617;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 14px;
     border-radius: 14px;
-    padding: 12px 16px;
-    min-width: 190px;
-    border: 1px solid #1f2937;
-    transition: all 0.18s ease-in-out;
-    box-shadow: 0 4px 12px rgba(15,23,42,0.5);
+    backdrop-filter: blur(8px);
+    transition: 0.25s;
 }
-
 .metric-card:hover {
-    background: linear-gradient(135deg, var(--cz-blue-dark), var(--cz-green));
-    transform: translateY(-3px) scale(1.01);
-    box-shadow: 0 14px 30px rgba(15,23,42,0.9);
+    transform: translateY(-4px);
+    background: rgba(255,255,255,0.15);
 }
 
-.metric-label { font-size: 0.8rem; color: #9ca3af; text-transform: uppercase; }
-.metric-value { font-size: 1.6rem; font-weight: 700; color: #fff; }
+.metric-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    opacity: 0.75;
+}
+.metric-value {
+    font-size: 1.7rem;
+    font-weight: 800;
+}
+
+/* Contenedor de gráficas */
+.chart-container {
+    padding: 1rem;
+    background: rgba(255,255,255,0.08);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(6px);
+    margin-bottom: 2rem;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # ============================
-# CACHE — evitar lag
+# LOAD MODEL + DATA
 # ============================
-
 @st.cache_resource
 def cargar_modelo():
-    modelo = joblib.load("modelo_knn_churn_final.pkl")
-    scaler = joblib.load("scaler_knn_churn.pkl")
-    umbral = joblib.load("umbral_optimo_knn.pkl")
-    features = joblib.load("features_knn_churn.pkl")
-    return modelo, scaler, umbral, features
+    return (
+        joblib.load("modelo_knn_churn_final.pkl"),
+        joblib.load("scaler_knn_churn.pkl"),
+        joblib.load("umbral_optimo_knn.pkl"),
+        joblib.load("features_knn_churn.pkl")
+    )
 
 @st.cache_data
 def cargar_dataset():
@@ -86,25 +110,11 @@ def cargar_test_set():
         return joblib.load("datos_test_knn.pkl")
     return None, None
 
-# PERMUTATION IMPORTANCE cacheado correctamente SIN parámetros
-@st.cache_resource
-def compute_permutation():
-    return permutation_importance(
-        modelo,
-        X_scaled_full,
-        y_full,
-        n_repeats=20,
-        random_state=42
-    )
-
-# ============================
-# CARGA DE DATOS Y MODELO
-# ============================
 modelo, scaler, umbral, features = cargar_modelo()
 df = cargar_dataset()
 X_test_scaled, y_test = cargar_test_set()
 
-# VARIABLES EXACTAS DEL NOTEBOOK
+# Variables derivadas
 df["Es_Nuevo"] = (df["Antiguedad"] < 5).astype(int)
 df["Tiene_Queja"] = df["Queja"].astype(int)
 df["Alto_Riesgo"] = ((df["Queja"] == 1) & (df["Antiguedad"] < 5)).astype(int)
@@ -114,7 +124,16 @@ X_full = df[features]
 y_full = df["Target"]
 X_scaled_full = scaler.transform(X_full)
 
-# IMPORTANCIA CACHEADA
+# ============================
+# PERMUTATION IMPORTANCE
+# ============================
+@st.cache_resource
+def compute_permutation():
+    return permutation_importance(
+        modelo, X_scaled_full, y_full,
+        n_repeats=20, random_state=42
+    )
+
 result = compute_permutation()
 importancias = pd.DataFrame({
     "feature": features,
@@ -122,14 +141,13 @@ importancias = pd.DataFrame({
 }).sort_values("importance", ascending=True)
 
 # ============================
-# LOGO OPCIONAL
+# LOGO
 # ============================
-logo_path = "logo_churnzero_2026.png"
-if os.path.exists(logo_path):
-    st.image(logo_path, width=160)
+if os.path.exists("logo_churnzero_2026.png"):
+    st.image("logo_churnzero_2026.png", width=180)
 
 # ============================
-# TÍTULO ANIMADO
+# TITLE
 # ============================
 st.markdown("<h1 class='fade-title'>ChurnZero 2026 – Dashboard KNN</h1>", unsafe_allow_html=True)
 
@@ -137,6 +155,7 @@ st.markdown("<h1 class='fade-title'>ChurnZero 2026 – Dashboard KNN</h1>", unsa
 # MÉTRICAS PRINCIPALES
 # ============================
 st.subheader("Métricas Principales")
+
 tasa_churn = df["Target"].mean()
 st.metric("Tasa global de churn", f"{tasa_churn:.2%}")
 st.write("**Modelo cargado:**", modelo)
@@ -145,7 +164,7 @@ st.write("**Umbral óptimo:**", f"{umbral:.6f}")
 # ============================
 # MÉTRICAS DEL MODELO
 # ============================
-st.markdown("### Desempeño del Modelo")
+st.subheader("Desempeño del Modelo")
 
 if X_test_scaled is None:
     X_test_scaled = X_scaled_full
@@ -170,18 +189,65 @@ c5.metric("F1-score", f"{f1:.2%}")
 # ============================
 # MATRIZ DE CONFUSIÓN
 # ============================
+st.subheader("Matriz de Confusión")
 cm = confusion_matrix(y_test, y_pred)
-st.markdown("#### Matriz de Confusión")
 st.table(pd.DataFrame(cm,
     index=["Real 0", "Real 1"],
     columns=["Pred 0", "Pred 1"]
 ))
 
 # ============================
+# 👉 RESTAURACIÓN DE SEGMENTACIÓN (GRÁFICA DESPLEGABLE)
+# ============================
+st.subheader("Segmentación de Churn")
+
+segmento = st.selectbox(
+    "Selecciona un segmento:",
+    [
+        "Nivel de Satisfacción",
+        "Antigüedad",
+        "Distancia al Almacén",
+        "Número de Dispositivos",
+        "Monto Cashback",
+    ]
+)
+
+# Bins iguales a los de tu notebook
+df["Antiguedad_seg"] = pd.cut(df["Antiguedad"], [0, 6, 12, 18, 24, 36, 200],
+    labels=["0-6", "7-12", "13-18", "19-24", "25-36", "36+"], include_lowest=True)
+
+df["Distancia_seg"] = pd.cut(df["Distancia_Almacen"], [0,10,20,30,40,200],
+    labels=["0-10","11-20","21-30","31-40","40+"], include_lowest=True)
+
+df["Cashback_seg"] = pd.qcut(df["Monto_Cashback"], 4,
+    labels=["Bajo","Medio Bajo","Medio Alto","Alto"])
+
+columna = {
+    "Nivel de Satisfacción": "Nivel_Satisfaccion",
+    "Antigüedad": "Antiguedad_seg",
+    "Distancia al Almacén": "Distancia_seg",
+    "Número de Dispositivos": "Numero_Dispositivos",
+    "Monto Cashback": "Cashback_seg",
+}[segmento]
+
+with st.container():
+    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+    fig, ax = plt.subplots(figsize=(6,3))
+    df.groupby(columna)["Target"].mean().plot(kind="bar", color="#a7d7ff", ax=ax)
+    ax.set_ylabel("Tasa de churn")
+    plt.tight_layout()
+    st.pyplot(fig)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ============================
 # IMPORTANCIA DE VARIABLES
 # ============================
 st.subheader("Importancia de Variables")
-fig, ax = plt.subplots(figsize=(5, 3))
-ax.barh(importancias["feature"], importancias["importance"], color="#77c2ff")
-plt.tight_layout()
-st.pyplot(fig)
+
+with st.container():
+    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+    fig2, ax2 = plt.subplots(figsize=(6,4))
+    ax2.barh(importancias["feature"], importancias["importance"], color="#a7d7ff")
+    plt.tight_layout()
+    st.pyplot(fig2)
+    st.markdown("</div>", unsafe_allow_html=True)
