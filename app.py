@@ -9,9 +9,9 @@ from sklearn.metrics import (
 from sklearn.inspection import permutation_importance
 import os
 
-# ============================
-# CONFIG GENERAL
-# ============================
+# ================================
+#  ESTILO GLOBAL 
+# ================================
 st.markdown("""
 <style>
 
@@ -28,75 +28,79 @@ html, body, [class*="css"] {
     color: #f1f5f9 !important;
 }
 
+
 /* ====================== */
-/* LOGO GRANDE Y CENTRADO */
+/* LOGO CENTRADO Y GRANDE */
 /* ====================== */
 .logo-container {
     display: flex;
     justify-content: center;
-    margin-top: 5px;
+    margin-top: 25px;
     margin-bottom: -10px;
 }
 
 .logo-img {
-    width: 230px;  /* ← AJUSTA AQUÍ EL TAMAÑO DEL LOGO */
-    filter: drop-shadow(0px 0px 6px rgba(0,0,0,0.35));
+    width: 260px;     /* ← ajusta aquí el tamaño del logo */
+    height: auto;
+    filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.45));
 }
+
 
 /* ====================== */
 /* TÍTULO ANIMADO */
 /* ====================== */
 .fade-title {
-    font-size: 3.2rem;
+    font-size: 3.4rem;
     font-weight: 900;
     text-align: center;
     color: white !important;
     opacity: 0;
     animation: fadeInTitle 1.6s ease-out forwards;
-    margin-top: 5px;
+    margin-top: 0px;
 }
 
 @keyframes fadeInTitle {
-    from { opacity: 0; transform: translateY(-12px); }
+    from { opacity: 0; transform: translateY(-16px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+
 
 /* ====================== */
 /* TARJETAS DE MÉTRICAS */
 /* ====================== */
 .metric-card {
     background: rgba(255,255,255,0.07);
-    padding: 18px 24px;
+    padding: 16px 22px;
     border-radius: 14px;
     border: 1px solid rgba(255,255,255,0.22);
     transition: 0.18s ease-in-out;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(3px);
 }
 
 .metric-card:hover {
-    background: rgba(0,0,0,0.30);
+    background: rgba(0,0,0,0.25);
     transform: translateY(-3px);
 }
 
-/* Label */
 .metric-label {
     font-size: 0.85rem;
     color: #d0d4da;
     text-transform: uppercase;
 }
 
-/* Valor grande */
 .metric-value {
     font-size: 1.9rem;
     font-weight: 700;
     color: white;
 }
 
+
 /* ====================== */
-/* TABLA: MATRIZ DE CONFUSIÓN */
+/* MATRIZ DE CONFUSIÓN   */
 /* ====================== */
+
 table {
-    background-color: rgba(255,255,255,0.18) !important;
+    background-color: rgba(255,255,255,0.12) !important;
     border-radius: 12px !important;
     overflow: hidden !important;
 }
@@ -109,12 +113,13 @@ thead tr th {
 
 tbody tr td {
     color: #ffffff !important;
-    background-color: rgba(0,0,0,0.30) !important;
+    background-color: rgba(0,0,0,0.25) !important;
     padding: 8px !important;
 }
 
+
 /* ====================== */
-/* DROPDOWN DESPLEGABLE  */
+/* DESPLEGABLE (SELECT)  */
 /* ====================== */
 .stSelectbox > div > div {
     background-color: rgba(255,255,255,0.12) !important;
@@ -123,12 +128,26 @@ tbody tr td {
     border: 1px solid rgba(255,255,255,0.25) !important;
 }
 
-.stSelectbox > div > div:hover {
-    background-color: rgba(255,255,255,0.20) !important;
-}
-
 </style>
 """, unsafe_allow_html=True)
+
+
+# =============================
+#   LOGO CENTRADO CON HTML
+# =============================
+st.markdown(
+    """
+    <div class="logo-container">
+        <img src="logo_churnzero_2026.png" class="logo-img">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# =============================
+#   TÍTULO ANIMADO
+# =============================
+st.markdown("<h1 class='fade-title'>ChurnZero 2026 – Dashboard KNN</h1>", unsafe_allow_html=True)
 
 
 # ============================
