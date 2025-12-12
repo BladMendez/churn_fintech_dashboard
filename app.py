@@ -197,11 +197,6 @@ importancias = pd.DataFrame({
     "importance": result.importances_mean
 }).sort_values("importance", ascending=True)
 
-# ============================
-# LOGO
-# ============================
-if os.path.exists("logo_churnzero_2026.png"):
-    st.image("logo_churnzero_2026.png", width=180)
 
 # ============================
 # TITLE
