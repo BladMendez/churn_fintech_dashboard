@@ -12,112 +12,110 @@ import os
 # ============================
 # CONFIG GENERAL
 # ============================
-st.set_page_config(page_title="ChurnZero 2026 – Dashboard KNN", layout="wide")
-
-# ============================
-#  CSS — NUEVO DISEÑO
-# ============================
 st.markdown("""
 <style>
 
-:root {
-    --cz-blue-dark: #0b1f3b;
-    --cz-blue-mid:  #1757a6;
-    --cz-green:     #39b54a;
-    --cz-white:     #f2f2f2;
-}
-
-/* =======================
-   FONDO DEL DASHBOARD
-======================= */
-body, .main {
-    background: linear-gradient(135deg, var(--cz-blue-dark), var(--cz-blue-mid), var(--cz-green));
+/* ====================== */
+/*  FONDO COMPLETO GLOBAL */
+/* ====================== */
+.stApp {
+    background: linear-gradient(135deg, #0b1f3b 0%, #1757a6 40%, #39b54a 100%);
     background-attachment: fixed;
 }
 
-/* Ajusta el contenedor principal */
-.block-container {
-    padding-top: 1.5rem;
-    padding-bottom: 1rem;
-    border-radius: 12px;
+/* Color general del texto */
+html, body, [class*="css"] {
+    color: #f1f5f9 !important;
 }
 
-/* =======================
-   TÍTULO PRINCIPAL
-======================= */
+/* ====================== */
+/* LOGO CENTRADO */
+/* ====================== */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: -20px;
+}
+
+/* ====================== */
+/* TÍTULO ANIMADO */
+/* ====================== */
 .fade-title {
-    font-size: 2.8rem;
+    font-size: 3rem;
     font-weight: 900;
     text-align: center;
-    margin-top: -0.5rem;
-    margin-bottom: 0.8rem;
-    color: var(--cz-white);
-    text-shadow: 0px 2px 4px rgba(0,0,0,0.4);
-    animation: fadeInTitle 1.2s ease-out forwards;
+    color: white !important;
+    opacity: 0;
+    animation: fadeInTitle 1.6s ease-out forwards;
 }
 
 @keyframes fadeInTitle {
-    from { opacity: 0; transform: translateY(-8px); }
+    from { opacity: 0; transform: translateY(-12px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* =======================
-   SUBTÍTULOS Y TEXTOS
-======================= */
-h2, h3, h4, label, p, .stMetric {
-    color: var(--cz-white) !important;
-    font-weight: 500;
-}
-
-/* =======================
-   TARJETAS DE MÉTRICAS
-======================= */
+/* ====================== */
+/* TARJETAS DE MÉTRICAS */
+/* ====================== */
 .metric-card {
     background: rgba(255,255,255,0.06);
+    padding: 16px 22px;
     border-radius: 14px;
-    padding: 14px 18px;
-    min-width: 190px;
-    border: 1px solid rgba(255,255,255,0.15);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
-    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: 0.18s ease-in-out;
 }
 
+.metric-card:hover {
+    background: rgba(0,0,0,0.30);
+    transform: translateY(-3px);
+}
+
+/* Label */
 .metric-label {
-    font-size: 0.8rem;
-    color: #e4e4e4;
+    font-size: 0.85rem;
+    color: #d0d4da;
     text-transform: uppercase;
 }
 
+/* Valor grande */
 .metric-value {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: white;
 }
 
-/* =======================
-   TABLAS
-======================= */
-thead th {
-    color: black !important;
-    background-color: #e8f0fa;
+/* ====================== */
+/* MATRIZ DE CONFUSIÓN   */
+/* ====================== */
+table {
+    background-color: rgba(255,255,255,0.12) !important;
+    border-radius: 10px !important;
+    overflow: hidden;
 }
 
-tbody td {
-    background-color: white;
-    color: black !important;
+thead tr th {
+    color: white !important;
+    background-color: rgba(255,255,255,0.25) !important;
 }
 
-/* =======================
-   GRÁFICAS
-======================= */
-.chart-container {
-    max-width: 680px;
-    margin-left: auto;
-    margin-right: auto;
+tbody tr td {
+    color: white !important;
+    background-color: rgba(0,0,0,0.25) !important;
+}
+
+/* ====================== */
+/* DROPDOWN DESPLEGABLE  */
+/* ====================== */
+.stSelectbox > div > div {
+    background-color: rgba(255,255,255,0.15) !important;
+    color: white !important;
+    border-radius: 8px !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
+
 
 
 # ============================
