@@ -15,9 +15,9 @@ import os
 st.markdown("""
 <style>
 
-/* ====================== */
-/*  FONDO COMPLETO GLOBAL */
-/* ====================== */
+ /* ====================== */
+ /*  FONDO COMPLETO GLOBAL */
+ /* ====================== */
 .stApp {
     background: linear-gradient(135deg, #0b1f3b 0%, #1757a6 40%, #39b54a 100%);
     background-attachment: fixed;
@@ -40,7 +40,7 @@ html, body, [class*="css"] {
 }
 
 .logo-img {
-    width: 260px;     /* ← ajusta aquí el tamaño del logo */
+    width: 260px;     /* Ajusta tamaño aquí */
     height: auto;
     filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.45));
 }
@@ -143,11 +143,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# =============================
-#   TÍTULO ANIMADO
-# =============================
-st.markdown("<h1 class='fade-title'>ChurnZero 2026 – Dashboard KNN</h1>", unsafe_allow_html=True)
 
 
 # ============================
