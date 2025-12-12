@@ -14,19 +14,98 @@ import os
 # ============================
 st.set_page_config(page_title="Churn Dashboard – KNN Fintech", layout="wide")
 
-st.markdown("""
-<style>
-.block-container {
-    max-width: 900px;
-    padding-top: 1rem;
-}
-.chart-container {
-    max-width: 650px;
-    margin-left: auto;
-    margin-right: auto;
-}
-</style>
-""", unsafe_allow_html=True)
+# ==== SOLO DISEÑO (CSS) ====
+st.markdown(
+    """
+    <style>
+    .block-container {
+        max-width: 1000px;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    .chart-container {
+        max-width: 650px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Paleta basada en el logo ChurnZero */
+    :root {
+        --cz-blue-dark: #0b1f3b;
+        --cz-blue-mid:  #1757a6;
+        --cz-green:     #39b54a;
+        --cz-light:     #e5e7eb;
+    }
+
+    /* Título con fade-in centrado */
+    .fade-title {
+        font-size: 2.6rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 0.2rem;
+        background: linear-gradient(90deg, var(--cz-blue-mid), var(--cz-green));
+        -webkit-background-clip: text;
+        color: transparent;
+        animation: fadeInTitle 1.8s ease-out forwards;
+        opacity: 0;
+    }
+    .subtitle {
+        text-align: center;
+        color: #9ca3af;
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+    }
+    @keyframes fadeInTitle {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tarjetas de métricas tipo cards */
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        margin-bottom: 0.4rem;
+    }
+    .metrics-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 1.2rem;
+    }
+    .metric-card {
+        background: #020617;
+        border-radius: 14px;
+        padding: 12px 16px;
+        min-width: 190px;
+        border: 1px solid #1f2937;
+        transition: all 0.18s ease-in-out;
+        cursor: default;
+        box-shadow: 0 4px 12px rgba(15,23,42,0.5);
+    }
+    .metric-card:hover {
+        background: linear-gradient(135deg, var(--cz-blue-dark), var(--cz-green));
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 14px 30px rgba(15,23,42,0.9);
+        border-color: rgba(255,255,255,0.18);
+    }
+    .metric-label {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        margin-bottom: 0.15rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+    .metric-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #f9fafb;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # ============================
 # CARGA DE MODELO Y ARCHIVOS
@@ -101,30 +180,77 @@ f1 = f1_score(y_test, y_pred)
 cm = confusion_matrix(y_test, y_pred)
 
 # ============================
-# DASHBOARD
+# DASHBOARD (SOLO DISEÑO CAMBIADO)
 # ============================
-st.title("Dashboard Analítico de Churn – Fintech (KNN)")
 
-# ---- Tasa global ----
-st.subheader("Métricas Principales")
+# ---- Header con logo + título animado ----
 tasa_churn = df["Target"].mean()
-st.metric("Tasa global de churn", f"{tasa_churn:.2%}")
-st.write("**Modelo cargado:**", modelo)
-st.write("**Umbral óptimo:**", f"{umbral:.6f}")
-st.caption(f"Métricas calculadas sobre: {origen_metricas}")
 
-# ---- Métricas del modelo ----
-st.markdown("### Desempeño del Modelo")
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    # Asegúrate de tener este archivo en el repo
+    st.image("logo_churnzero_2026.png", width=160)
+    st.markdown(
+        '<div class="fade-title">ChurnZero 2026 – Churn Dashboard</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="subtitle">Proyecto de ciencia de datos para detección temprana de churn usando KNN.</div>',
+        unsafe_allow_html=True
+    )
 
-c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("Accuracy", f"{acc:.2%}")
-c2.metric("ROC-AUC", f"{roc:.3f}")
-c3.metric("Precisión (Churn)", f"{prec:.2%}")
-c4.metric("Recall (Churn)", f"{rec:.2%}")
-c5.metric("F1-score", f"{f1:.2%}")
+# ---- Métricas principales en tarjetas ----
+st.markdown('<div class="section-title">Métricas principales</div>', unsafe_allow_html=True)
 
-# Matriz de confusión
-st.markdown("#### Matriz de Confusión")
+metrics_html = f"""
+<div class="metrics-row">
+    <div class="metric-card">
+        <div class="metric-label">Tasa global de churn</div>
+        <div class="metric-value">{tasa_churn:.2%}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Accuracy</div>
+        <div class="metric-value">{acc:.2%}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">ROC-AUC</div>
+        <div class="metric-value">{roc:.3f}</div>
+    </div>
+</div>
+"""
+st.markdown(metrics_html, unsafe_allow_html=True)
+
+# Detalle del modelo en expander (no cambia lógica)
+with st.expander("Ver detalles del modelo cargado"):
+    st.write("**Modelo cargado:**")
+    st.code(str(modelo))
+    st.write("**Umbral óptimo:**", f"{umbral:.6f}")
+    st.caption(f"Métricas calculadas sobre: {origen_metricas}")
+
+st.markdown("---")
+
+# ---- Desempeño del Modelo (tarjetas) ----
+st.markdown('<div class="section-title">Desempeño del modelo sobre clientes en riesgo (Churn)</div>', unsafe_allow_html=True)
+
+perf_html = f"""
+<div class="metrics-row">
+    <div class="metric-card">
+        <div class="metric-label">Precisión (Churn)</div>
+        <div class="metric-value">{prec:.2%}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Recall (Churn)</div>
+        <div class="metric-value">{rec:.2%}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">F1-score</div>
+        <div class="metric-value">{f1:.2%}</div>
+    </div>
+</div>
+"""
+st.markdown(perf_html, unsafe_allow_html=True)
+
+st.markdown("### Matriz de Confusión")
 cm_df = pd.DataFrame(
     cm,
     index=["Real 0 (No churn)", "Real 1 (Churn)"],
@@ -148,16 +274,22 @@ segmento = st.selectbox(
     ]
 )
 
-df["Antiguedad_seg"] = pd.cut(df["Antiguedad"], [0, 6, 12, 18, 24, 36, 200],
-                             labels=["0-6", "7-12", "13-18", "19-24", "25-36", "36+"],
-                             include_lowest=True)
+df["Antiguedad_seg"] = pd.cut(
+    df["Antiguedad"], [0, 6, 12, 18, 24, 36, 200],
+    labels=["0-6", "7-12", "13-18", "19-24", "25-36", "36+"],
+    include_lowest=True
+)
 
-df["Distancia_seg"] = pd.cut(df["Distancia_Almacen"], [0, 10, 20, 30, 40, 200],
-                             labels=["0-10", "11-20", "21-30", "31-40", "40+"],
-                             include_lowest=True)
+df["Distancia_seg"] = pd.cut(
+    df["Distancia_Almacen"], [0, 10, 20, 30, 40, 200],
+    labels=["0-10", "11-20", "21-30", "31-40", "40+"],
+    include_lowest=True
+)
 
-df["Cashback_seg"] = pd.qcut(df["Monto_Cashback"], 4,
-                             labels=["Bajo", "Medio Bajo", "Medio Alto", "Alto"])
+df["Cashback_seg"] = pd.qcut(
+    df["Monto_Cashback"], 4,
+    labels=["Bajo", "Medio Bajo", "Medio Alto", "Alto"]
+)
 
 columna = {
     "Nivel de Satisfacción": "Nivel_Satisfaccion",
