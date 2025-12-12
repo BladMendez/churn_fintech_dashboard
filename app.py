@@ -15,78 +15,110 @@ import os
 st.set_page_config(page_title="ChurnZero 2026 – Dashboard KNN", layout="wide")
 
 # ============================
-# 🎨 CSS — NUEVO DISEÑO
+#  CSS — NUEVO DISEÑO
 # ============================
 st.markdown("""
 <style>
 
-html, body, [class*="css"]  {
-    background: linear-gradient(180deg, #0b1f3b, #1757a6, #39b54a);
-    color: white !important;
+:root {
+    --cz-blue-dark: #0b1f3b;
+    --cz-blue-mid:  #1757a6;
+    --cz-green:     #39b54a;
+    --cz-white:     #f2f2f2;
 }
 
+/* =======================
+   FONDO DEL DASHBOARD
+======================= */
+body, .main {
+    background: linear-gradient(135deg, var(--cz-blue-dark), var(--cz-blue-mid), var(--cz-green));
+    background-attachment: fixed;
+}
+
+/* Ajusta el contenedor principal */
 .block-container {
-    max-width: 1150px;
     padding-top: 1.5rem;
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-radius: 12px;
 }
 
-h1, h2, h3, h4, h5 {
-    color: #ffffff !important;
-}
-
-/* Título fade */
+/* =======================
+   TÍTULO PRINCIPAL
+======================= */
 .fade-title {
-    font-size: 3rem;
+    font-size: 2.8rem;
     font-weight: 900;
     text-align: center;
-    margin-top: 0.3rem;
-    background: linear-gradient(90deg, #78c3ff, #39b54a);
-    -webkit-background-clip: text;
-    color: transparent;
-    opacity: 0;
-    animation: fadeIn 2s ease-out forwards;
+    margin-top: -0.5rem;
+    margin-bottom: 0.8rem;
+    color: var(--cz-white);
+    text-shadow: 0px 2px 4px rgba(0,0,0,0.4);
+    animation: fadeInTitle 1.2s ease-out forwards;
 }
-@keyframes fadeIn {
+
+@keyframes fadeInTitle {
     from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Tarjetas */
-.metric-card {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.18);
-    padding: 14px;
-    border-radius: 14px;
-    backdrop-filter: blur(8px);
-    transition: 0.25s;
+/* =======================
+   SUBTÍTULOS Y TEXTOS
+======================= */
+h2, h3, h4, label, p, .stMetric {
+    color: var(--cz-white) !important;
+    font-weight: 500;
 }
-.metric-card:hover {
-    transform: translateY(-4px);
-    background: rgba(255,255,255,0.15);
+
+/* =======================
+   TARJETAS DE MÉTRICAS
+======================= */
+.metric-card {
+    background: rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 14px 18px;
+    min-width: 190px;
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    backdrop-filter: blur(4px);
 }
 
 .metric-label {
     font-size: 0.8rem;
+    color: #e4e4e4;
     text-transform: uppercase;
-    opacity: 0.75;
-}
-.metric-value {
-    font-size: 1.7rem;
-    font-weight: 800;
 }
 
-/* Contenedor de gráficas */
-.chart-container {
-    padding: 1rem;
-    background: rgba(255,255,255,0.08);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.12);
-    backdrop-filter: blur(6px);
-    margin-bottom: 2rem;
+.metric-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
 }
+
+/* =======================
+   TABLAS
+======================= */
+thead th {
+    color: black !important;
+    background-color: #e8f0fa;
+}
+
+tbody td {
+    background-color: white;
+    color: black !important;
+}
+
+/* =======================
+   GRÁFICAS
+======================= */
+.chart-container {
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 </style>
 """, unsafe_allow_html=True)
+
 
 # ============================
 # LOAD MODEL + DATA
