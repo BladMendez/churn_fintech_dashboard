@@ -10,14 +10,16 @@ from sklearn.inspection import permutation_importance
 import os
 
 # ================================
-#  ESTILO GLOBAL 
+#  CONFIG + ESTILO GLOBAL 
 # ================================
+st.set_page_config(page_title="ChurnZero 2026 – Dashboard KNN", layout="wide")
+
 st.markdown("""
 <style>
 
- /* ====================== */
- /*  FONDO COMPLETO GLOBAL */
- /* ====================== */
+/* ====================== */
+/*  FONDO COMPLETO GLOBAL */
+/* ====================== */
 .stApp {
     background: linear-gradient(135deg, #0b1f3b 0%, #1757a6 40%, #39b54a 100%);
     background-attachment: fixed;
@@ -28,23 +30,12 @@ html, body, [class*="css"] {
     color: #f1f5f9 !important;
 }
 
-
-/* ====================== */
-/* LOGO CENTRADO Y GRANDE */
-/* ====================== */
-.logo-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 25px;
-    margin-bottom: -10px;
+/* Contenedor de charts para centrarlos */
+.chart-container {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
 }
-
-.logo-img {
-    width: 260px;     /* Ajusta tamaño aquí */
-    height: auto;
-    filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.45));
-}
-
 
 /* ====================== */
 /* TÍTULO ANIMADO */
@@ -57,13 +48,13 @@ html, body, [class*="css"] {
     opacity: 0;
     animation: fadeInTitle 1.6s ease-out forwards;
     margin-top: 0px;
+    margin-bottom: 1.5rem;
 }
 
 @keyframes fadeInTitle {
     from { opacity: 0; transform: translateY(-16px); }
     to   { opacity: 1; transform: translateY(0); }
 }
-
 
 /* ====================== */
 /* TARJETAS DE MÉTRICAS */
@@ -94,11 +85,9 @@ html, body, [class*="css"] {
     color: white;
 }
 
-
 /* ====================== */
 /* MATRIZ DE CONFUSIÓN   */
 /* ====================== */
-
 table {
     background-color: rgba(255,255,255,0.12) !important;
     border-radius: 12px !important;
@@ -117,7 +106,6 @@ tbody tr td {
     padding: 8px !important;
 }
 
-
 /* ====================== */
 /* DESPLEGABLE (SELECT)  */
 /* ====================== */
@@ -131,19 +119,23 @@ tbody tr td {
 </style>
 """, unsafe_allow_html=True)
 
+# =============================
+#   LOGO CENTRADO (st.image)
+# =============================
+if os.path.exists("logo_churnzero_2026.png"):
+    left, center, right = st.columns([1, 2, 1])
+    with center:
+        st.image("logo_churnzero_2026.png", width=260)
+else:
+    st.warning("No se encontró 'logo_churnzero_2026.png' en el directorio de la app.")
 
-# =============================
-#   LOGO CENTRADO CON HTML
-# =============================
+# ============================
+# TITLE
+# ============================
 st.markdown(
-    """
-    <div class="logo-container">
-        <img src="logo_churnzero_2026.png" class="logo-img">
-    </div>
-    """,
+    "<h1 class='fade-title'>ChurnZero 2026 – Dashboard KNN</h1>",
     unsafe_allow_html=True
 )
-
 
 # ============================
 # LOAD MODEL + DATA
@@ -197,12 +189,6 @@ importancias = pd.DataFrame({
     "importance": result.importances_mean
 }).sort_values("importance", ascending=True)
 
-
-# ============================
-# TITLE
-# ============================
-st.markdown("<h1 class='fade-title'>ChurnZero 2026 – Dashboard KNN</h1>", unsafe_allow_html=True)
-
 # ============================
 # MÉTRICAS PRINCIPALES
 # ============================
@@ -243,13 +229,14 @@ c5.metric("F1-score", f"{f1:.2%}")
 # ============================
 st.subheader("Matriz de Confusión")
 cm = confusion_matrix(y_test, y_pred)
-st.table(pd.DataFrame(cm,
+st.table(pd.DataFrame(
+    cm,
     index=["Real 0", "Real 1"],
     columns=["Pred 0", "Pred 1"]
 ))
 
 # ============================
-#  (GRÁFICA DESPLEGABLE)
+#  GRÁFICA DESPLEGABLE
 # ============================
 st.subheader("Segmentación de Churn")
 
@@ -265,14 +252,22 @@ segmento = st.selectbox(
 )
 
 # Bins iguales a los de tu notebook
-df["Antiguedad_seg"] = pd.cut(df["Antiguedad"], [0, 6, 12, 18, 24, 36, 200],
-    labels=["0-6", "7-12", "13-18", "19-24", "25-36", "36+"], include_lowest=True)
+df["Antiguedad_seg"] = pd.cut(
+    df["Antiguedad"], [0, 6, 12, 18, 24, 36, 200],
+    labels=["0-6", "7-12", "13-18", "19-24", "25-36", "36+"],
+    include_lowest=True
+)
 
-df["Distancia_seg"] = pd.cut(df["Distancia_Almacen"], [0,10,20,30,40,200],
-    labels=["0-10","11-20","21-30","31-40","40+"], include_lowest=True)
+df["Distancia_seg"] = pd.cut(
+    df["Distancia_Almacen"], [0, 10, 20, 30, 40, 200],
+    labels=["0-10", "11-20", "21-30", "31-40", "40+"],
+    include_lowest=True
+)
 
-df["Cashback_seg"] = pd.qcut(df["Monto_Cashback"], 4,
-    labels=["Bajo","Medio Bajo","Medio Alto","Alto"])
+df["Cashback_seg"] = pd.qcut(
+    df["Monto_Cashback"], 4,
+    labels=["Bajo", "Medio Bajo", "Medio Alto", "Alto"]
+)
 
 columna = {
     "Nivel de Satisfacción": "Nivel_Satisfaccion",
@@ -284,7 +279,7 @@ columna = {
 
 with st.container():
     st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-    fig, ax = plt.subplots(figsize=(6,3))
+    fig, ax = plt.subplots(figsize=(6, 3))
     df.groupby(columna)["Target"].mean().plot(kind="bar", color="#a7d7ff", ax=ax)
     ax.set_ylabel("Tasa de churn")
     plt.tight_layout()
@@ -298,7 +293,7 @@ st.subheader("Importancia de Variables")
 
 with st.container():
     st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-    fig2, ax2 = plt.subplots(figsize=(6,4))
+    fig2, ax2 = plt.subplots(figsize=(6, 4))
     ax2.barh(importancias["feature"], importancias["importance"], color="#a7d7ff")
     plt.tight_layout()
     st.pyplot(fig2)
